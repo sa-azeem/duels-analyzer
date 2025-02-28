@@ -40,7 +40,10 @@ def get_duel_tokens(session):
     return game_tokens
 
 def get_player_data(session):
-    player_data=session.get(f"{BASE_URL_V4}/feed/private").json()['entries'][0]['user']
+    try:
+        player_data=session.get(f"{BASE_URL_V4}/feed/private").json()['entries'][0]['user']
+    except:
+        return {}
     return {'id':player_data['id'],
     'nick':player_data['nick']}
 
