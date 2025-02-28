@@ -84,7 +84,8 @@ if  (submitted_token or st.session_state['submitted_token']) and _ncfa:
             data_dict=st.session_state['data_dict']
         df=pd.DataFrame()
         df=pd.DataFrame(data_dict)
-        df=helpers.datetime_processing(df)
+        if not df.empty:
+            df=helpers.datetime_processing(df)
 
         submitted=False
         option = st.radio(

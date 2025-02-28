@@ -429,8 +429,10 @@ def get_country_name(country_code):
             'za': 'South Africa',
             'zm': 'Zambia',
             'zw': 'Zimbabwe',}
-    return country_name_dict[country_code]
-
+    if country_code in country_name_dict.keys():
+        return country_name_dict[country_code]
+    else:
+        return country_code
 def display_country_scores_map(df, country_col, score_col):
     # reversing color is needed for distance because more is less in case of distance
     color_=px.colors.sequential.Turbo_r
