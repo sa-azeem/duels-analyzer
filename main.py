@@ -107,7 +107,7 @@ if  (submitted_token or st.session_state['submitted_token']) and _ncfa:
                 submitted=st.form_submit_button("Submit")
         if 'submitted' not in st.session_state:
             st.session_state['submitted']=False
-        if st.session_state['submitted'] or submitted :
+        if (st.session_state['submitted'] or submitted) and not df.empty:
             st.session_state['submitted']=True
             df_filtered=pd.DataFrame()
             if option == 'By Date':
