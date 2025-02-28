@@ -148,8 +148,9 @@ def get_duels(session,duel_tokens,my_player_Id,loading_bar):
                 data_dict['Opponent Rating'].append(game['teams'][other]['players'][0]['rating'])
 
         else:
-            print(f"Request failed with status code: {response.status_code}")
-            print(f"Response content: {response.text}")
+            # print(f"Request failed with status code: {response.status_code}")
+            # print(f"Response content: {response.text}")
+            pass 
     return data_dict
 
 def datetime_processing(df):
@@ -609,7 +610,7 @@ def create_line_chart_games_played(df,  date_option):
         group_format = 'M'
     else:  # Yearly
         group_format = 'Y'
-    df['Group'] = df[date_col].dt.to_period(group_format).apply(lambda r: r.start_time)
+    df.loc[:,'Group'] = df[date_col].dt.to_period(group_format).apply(lambda r: r.start_time)
     df_grouped=df.groupby(by='Group')[metric_col].nunique()
     
     fig = px.line(df_grouped,  y=metric_col,markers=True )

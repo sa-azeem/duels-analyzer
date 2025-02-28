@@ -74,7 +74,7 @@ if _ncfa:
             st.session_state['data_dict']=data_dict
         else:
             data_dict=st.session_state['data_dict']
-
+        df=pd.DataFrame()
         df=pd.DataFrame(data_dict)
         df=helpers.datetime_processing(df)
 
@@ -101,13 +101,13 @@ if _ncfa:
         if st.session_state['submitted'] or submitted:
             st.session_state['submitted']=True
             if option == 'By Date':
-                df_filtered=df[(df['Date']>=date_range[0]) & (df['Date']<=date_range[1])]
+                df_filtered=df[(df['Date']>=date_range[0]) & (df['Date']<=date_range[1])].copy()
                 st.write(f"Found {df_filtered['Game Id'].nunique()} games")
             elif option == 'Recent games':
                 df['Running Total'] = (df['Game Id'] != df['Game Id'].shift()).cumsum()
-                df_filtered=df[df['Running Total']<=slider_value]
+                df_filtered=df[df['Running Total']<=slider_value].copy()
             else:
-                df_filtered=df
+                df_filtered=df.copy()
             # st.write(df_filtered)
             by_country=helpers.groupby_country(df_filtered)
             top_n = st.slider('Select how many countries you want to see (by round count):',min_value=1,max_value=len(by_country),value=20,step=1,help='This helps filter out the countries that occur very rarely.')
