@@ -177,8 +177,9 @@ def groupby_country(df):
     by_country=by_country[new_cols]
     return by_country
 
-def get_country_name(country_code):
-  return {'ad': 'Andorra',
+def get_country_name(country_code): 
+    country_code=country_code.lower()
+    country_name_dict={'ad': 'Andorra',
             'ae': 'United Arab Emirates',
             'af': 'Afghanistan',
             'ag': 'Antigua and Barbuda',
@@ -427,8 +428,8 @@ def get_country_name(country_code):
             'yt': 'Mayotte',
             'za': 'South Africa',
             'zm': 'Zambia',
-            'zw': 'Zimbabwe',}[country_code]
-
+            'zw': 'Zimbabwe',}
+    return country_name_dict[country_code]
 
 def display_country_scores_map(df, country_col, score_col):
     # reversing color is needed for distance because more is less in case of distance

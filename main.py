@@ -73,7 +73,7 @@ if  (submitted_token or st.session_state['submitted_token']) and _ncfa:
         # else:
             # st.write(f"Retrieving games between {date_range[0]} and {date_range[1]}...")
             # to do the whole retrival  by date thing
-        
+        data_dict={}
         if 'data_dict' not in st.session_state:
             st.session_state['data_dict']={}
             loading_bar=st.progress(0)
@@ -106,7 +106,7 @@ if  (submitted_token or st.session_state['submitted_token']) and _ncfa:
                 submitted=st.form_submit_button("Submit")
         if 'submitted' not in st.session_state:
             st.session_state['submitted']=False
-        if st.session_state['submitted'] or submitted:
+        if st.session_state['submitted'] or submitted :
             st.session_state['submitted']=True
             df_filtered=pd.DataFrame()
             if option == 'By Date':
