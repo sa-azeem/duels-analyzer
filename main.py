@@ -29,8 +29,9 @@ if  (submitted_token or st.session_state['submitted_token']) and _ncfa:
     st.session_state['submitted_token']=True
     session=helpers.get_session(_ncfa)
     player_data=helpers.get_player_data(session)
-    my_player_Id=player_data['id']
-    st.write(f'Hello {player_data['nick']} (id {player_data['id']}), extracting your game tokens...')
+    if player_data!={}:
+        my_player_Id=player_data['id']
+        st.write(f'Hello {player_data['nick']} (id {player_data['id']}), extracting your game tokens...')
     if 'duel_tokens' not in st.session_state:
         st.session_state['duel_tokens']=[]
         with st.spinner("", show_time=True):
