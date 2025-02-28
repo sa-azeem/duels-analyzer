@@ -15,7 +15,7 @@ with st.expander("For any questions/suggestions, message me here"):
     st.page_link('http://reddit.com/u/brartheonnerd', label='Reddit')
     st.page_link("http://twitter.com/azeemstweet",label="Twitter")
 
-_ncfa = st.text_input("Enter _nfca token:")
+_ncfa = st.text_input("Enter _ncfa token:")
 st.link_button('How to get your _ncfa token',"https://github.com/SafwanSipai/geo-insight?tab=readme-ov-file#getting-your-_ncfa-cookie"
 )
 if _ncfa:
@@ -100,6 +100,7 @@ if _ncfa:
             st.session_state['submitted']=False
         if st.session_state['submitted'] or submitted:
             st.session_state['submitted']=True
+            df_filtered=pd.DataFrame()
             if option == 'By Date':
                 df_filtered=df[(df['Date']>=date_range[0]) & (df['Date']<=date_range[1])].copy()
                 st.write(f"Found {df_filtered['Game Id'].nunique()} games")
