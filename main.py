@@ -14,11 +14,19 @@ with st.expander("For any questions/suggestions, message me here"):
     st.page_link("http://a-azeem.bsky.social",label='Bluesky')
     st.page_link('http://reddit.com/u/brartheonnerd', label='Reddit')
     st.page_link("http://twitter.com/azeemstweet",label="Twitter")
+with st.form('input_token'):
+    _ncfa = st.text_input("Enter _ncfa token:")
+    col1,col2, col3=st.columns(3)
+    with col1:
+        st.link_button('How to get your _ncfa token',"https://github.com/SafwanSipai/geo-insight?tab=readme-ov-file#getting-your-_ncfa-cookie")
+    with col3:
+        submitted_token = st.form_submit_button("Enter")
+    
+if 'submitted_token' not in st.session_state:
+    st.session_state['submitted_token']=False
 
-_ncfa = st.text_input("Enter _ncfa token:")
-st.link_button('How to get your _ncfa token',"https://github.com/SafwanSipai/geo-insight?tab=readme-ov-file#getting-your-_ncfa-cookie"
-)
-if _ncfa:
+if  (submitted_token or st.session_state['submitted_token']) and _ncfa:
+    st.session_state['submitted_token']=True
     session=helpers.get_session(_ncfa)
     player_data=helpers.get_player_data(session)
     my_player_Id=player_data['id']
