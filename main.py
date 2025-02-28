@@ -756,7 +756,7 @@ if  (submitted_token or st.session_state['submitted_token']) and _ncfa:
         df=pd.DataFrame(data_dict)
         if not df.empty:
             df=helpers.datetime_processing(df)
-
+        st.write(df)
         submitted=False
         option = st.radio(
             'How many games you want to analyze?',
