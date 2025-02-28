@@ -108,10 +108,10 @@ def get_duels(session,duel_tokens,my_player_Id,loading_bar):
                     data_dict['Your Distance'].append(my_guess['distance']/1000)
                     data_dict['Your Score'].append(my_guess['score'])
                 else:
-                    data_dict['Your Latitude'].append(np.nan)
-                    data_dict['Your Longitude'].append(np.nan)
-                    data_dict['Your Distance'].append(np.nan)
-                    data_dict['Your Score'].append(np.nan)
+                    data_dict['Your Latitude'].append(0)
+                    data_dict['Your Longitude'].append(0)
+                    data_dict['Your Distance'].append(0)
+                    data_dict['Your Score'].append(0)
 
 
                 other_guess=  [guess for guess in game['teams'][other]['players'][0]['guesses'] if guess['roundNumber']==i+1]
@@ -122,15 +122,15 @@ def get_duels(session,duel_tokens,my_player_Id,loading_bar):
                     data_dict['Opponent Distance'].append(other_guess['distance']/1000)
                     data_dict['Opponent Score'].append(other_guess['score'])
                 else:
-                    data_dict['Opponent Latitude'].append(np.nan)
-                    data_dict['Opponent Longitude'].append(np.nan)
-                    data_dict['Opponent Distance'].append(np.nan)
-                    data_dict['Opponent Score'].append(np.nan)
+                    data_dict['Opponent Latitude'].append(0)
+                    data_dict['Opponent Longitude'].append(0)
+                    data_dict['Opponent Distance'].append(0)
+                    data_dict['Opponent Score'].append(0)
                 data_dict['Score Difference'].append(
-                    np.nan_to_num(data_dict['Your Score'][-1])-np.nan_to_num(data_dict['Opponent Score'][-1])
+                    data_dict['Your Score'][-1]-data_dict['Opponent Score'][-1]
                 )
                 data_dict['Win Percentage'].append(
-                    int(np.nan_to_num(data_dict['Your Score'][-1])>np.nan_to_num(data_dict['Opponent Score'][-1]))*100
+                    int(data_dict['Your Score'][-1]>data_dict['Opponent Score'][-1])*100
                 )
                 # repeated
                 data_dict['Game Id'].append(game['gameId'])
