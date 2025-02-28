@@ -165,10 +165,10 @@ def datetime_processing(df):
 
 
 def groupby_country(df):
-    by_country=df.groupby('Country').agg({'Your Score': 'mean', 'Opponent Score': 'mean','Country':'count','Your Distance':'mean'})
+    by_country=df.groupby('Country').agg({'Your Score': 'mean', 'Opponent Score': 'mean','Score Difference':'mean','Win Percentage':'mean','Country':'count','Your Distance':'mean'})
     by_country.rename(columns={'Country':'Number of Rounds','Your Distance':'Distance'}, inplace=True)
-    by_country['Score Difference']=by_country['Your Score']-by_country['Opponent Score']
-    by_country['Win Percentage']=df.groupby('Country')[['Your Score','Opponent Score']].apply(lambda x: (x['Your Score']>x['Opponent Score']).mean()*100).apply(lambda x: round(x,2))
+    # by_country['Score Difference']=by_country['Your Score']-by_country['Opponent Score']
+    by_country['Win Percentage']=by_country['Win Percentage'].apply(lambda x: round(x,2))
     by_country[['Your Score', 'Opponent Score', 'Score Difference','Distance']]=by_country[['Your Score', 'Opponent Score', 'Score Difference','Distance']].apply(round)
     
 
