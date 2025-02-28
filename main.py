@@ -74,14 +74,15 @@ if  (submitted_token or st.session_state['submitted_token']) and _ncfa:
             # st.write(f"Retrieving games between {date_range[0]} and {date_range[1]}...")
             # to do the whole retrival  by date thing
         data_dict={}
-        if 'data_dict' not in st.session_state:
-            st.session_state['data_dict']={}
-            loading_bar=st.progress(0)
-            data_dict=helpers.get_duels(session,duel_tokens,my_player_Id,loading_bar)
-            st.success('Done')
-            st.session_state['data_dict']=data_dict
-        else:
-            data_dict=st.session_state['data_dict']
+        if len(duel_tokens)>0:
+            if 'data_dict' not in st.session_state:
+                st.session_state['data_dict']={}
+                loading_bar=st.progress(0)
+                data_dict=helpers.get_duels(session,duel_tokens,my_player_Id,loading_bar)
+                st.success('Done')
+                st.session_state['data_dict']=data_dict
+            else:
+                data_dict=st.session_state['data_dict']
         df=pd.DataFrame()
         df=pd.DataFrame(data_dict)
         if not df.empty:
