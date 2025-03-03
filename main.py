@@ -699,7 +699,7 @@ if  (submitted_token or st.session_state['submitted_token']) and _ncfa:
     player_data=helpers.get_player_data(session)
     if player_data!={}:
         my_player_Id=player_data['id']
-        st.write(f'Hello {player_data['nick']} (id {player_data['id']}), extracting your game tokens...')
+        st.write(f"Hello {player_data['nick']} (id {player_data['id']}), extracting your game tokens...")
     if 'duel_tokens' not in st.session_state:
         st.session_state['duel_tokens']=[]
         with st.spinner("", show_time=True):
@@ -707,10 +707,10 @@ if  (submitted_token or st.session_state['submitted_token']) and _ncfa:
         st.session_state['duel_tokens']=duel_tokens
     else:
         duel_tokens=st.session_state['duel_tokens']
-    st.write(f'Found {len(duel_tokens)} rated duels.')
+    st.write(f"Found {len(duel_tokens)} rated duels.")
     
     
-    st.write(f'To retrive all {len(duel_tokens)} games, it will take around {60*len(duel_tokens)/500} seconds.')
+    st.write(f"To retrive all {len(duel_tokens)} games, it will take around {60*len(duel_tokens)/500} seconds.")
     st.markdown('I recommend you choose **All**, it will take some time but after that, you can analyse your games withouth any loading.')
     retrieval_option = st.radio(
             "Retrieval Option:",
@@ -798,27 +798,27 @@ if  (submitted_token or st.session_state['submitted_token']) and _ncfa:
                 with st.expander(""):    
                     col1, col2=st.columns(2)
                     with col1:
-                        st.markdown(f'# {round(df_filtered['Win Percentage'].mean(),2)} %')
+                        st.markdown(f"# {round(df_filtered['Win Percentage'].mean(),2)} %")
                         st.write(f"Win Rate")
                     with col2:
-                        st.markdown(f'# {df_filtered.iloc[0]["Your Rating"]}')
+                        st.markdown(f"# {df_filtered.iloc[0]["Your Rating"]}")
                         st.write(f"Duels Rating")
                         
                     best_country_by_win_rate=top_n_countries.sort_values(by='Win Percentage',ascending=False).reset_index().head(1)
                     worst_country_by_win_rate=top_n_countries.sort_values(by='Win Percentage',ascending=True).reset_index().head(1)
                     col1, col2=st.columns(2)
                     with col1:
-                        st.markdown(f'# {best_country_by_win_rate.iloc[0]['Country']}')
+                        st.markdown(f"# {best_country_by_win_rate.iloc[0]['Country']}")
                         st.write(f"Best win rate:\t{best_country_by_win_rate.iloc[0]['Win Percentage']} %")
                     with col2:
-                        st.markdown(f'# {worst_country_by_win_rate.iloc[0]['Country']}')
+                        st.markdown(f"# {worst_country_by_win_rate.iloc[0]['Country']}")
                         st.write(f"Worst win rate:\t{worst_country_by_win_rate.iloc[0]['Win Percentage']} %")
                     col1, col2=st.columns(2)
                     with col1:
-                        st.markdown(f'# {round(df_filtered['Your Score'].mean())}')
+                        st.markdown(f"# {round(df_filtered['Your Score'].mean())}")
                         st.write(f"Average Score")
                     with col2:
-                        st.markdown(f'# {round(df_filtered['Your Distance'].mean())}')
+                        st.markdown(f"# {round(df_filtered['Your Distance'].mean())}")
                         st.write(f"Average Distance (km)")
                         
                     date_option = st.radio("A",("Week", "Month", "Year"),horizontal=True,label_visibility="collapsed",key='98465')
@@ -841,32 +841,32 @@ if  (submitted_token or st.session_state['submitted_token']) and _ncfa:
                     else:
                         metric_col=metric
                     
-                    st.markdown(f'#### Average {metric} by Country')
+                    st.markdown(f"#### Average {metric} by Country")
                     helpers.display_country_scores_map(top_n_countries.reset_index(), "Country", metric_col)
                     
                     helpers.sorted_bar_chart(top_n_countries,'Country',metric_col)
 
-                    st.markdown(f'#### Average {metric} by Rounds')
+                    st.markdown(f"#### Average {metric} by Rounds")
                     by_round=helpers.groupby_round(df_filtered)
                     helpers.sorted_bar_chart(by_round,'Round Number',metric_col)
                     
-                    st.markdown(f'#### Average {metric} by Time Periods')
+                    st.markdown(f"#### Average {metric} by Time Periods")
                     helpers.create_binned_histogram(df_filtered,metric_col)
                     
-                    st.markdown(f'#### Average {metric} against players from other Countries')
+                    st.markdown(f"#### Average {metric} against players from other Countries")
                     by_country_against=helpers.groupby_country_against(df_filtered)
                     helpers.sorted_bar_chart(by_country_against,'Opponent Country',metric_col)
                     
-                    st.markdown(f'#### All your guesses, colored by {metric}')
+                    st.markdown(f"#### All your guesses, colored by {metric}")
                     helpers.create_map(df_filtered,metric_col)
                     
-                    st.markdown(f'#### {metric} distribution by Country')
+                    st.markdown(f"#### {metric} distribution by Country")
                     df_filtered_only_top_countries=df_filtered[df_filtered.reset_index()['Country'].isin(top_n_countries.reset_index()['Country'].tolist())]
                     metric_for_box= metric_col if metric_col !='Distance' else 'Your Distance'
                     fig=px.box(data_frame=df_filtered_only_top_countries.reset_index(),x=metric_for_box,y='Country')
                     st.plotly_chart(fig,help='If this is feels cramped, try decreasing the top country parameter at the top')
 
-                st.markdown(f'### Comparisons')
+                st.markdown(f"### Comparisons")
                 with st.expander(""):
                     st.markdown('#### Comparison between different metrices')
                     col1, col2,col3 = st.columns(3)
