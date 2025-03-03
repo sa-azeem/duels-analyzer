@@ -801,7 +801,7 @@ if  (submitted_token or st.session_state['submitted_token']) and _ncfa:
                         st.markdown(f"# {round(df_filtered['Win Percentage'].mean(),2)} %")
                         st.write(f"Win Rate")
                     with col2:
-                        st.markdown(f"# {df_filtered.iloc[0]["Your Rating"]}")
+                        st.markdown(f"# {df_filtered.iloc[0]['Your Rating']}")
                         st.write(f"Duels Rating")
                         
                     best_country_by_win_rate=top_n_countries.sort_values(by='Win Percentage',ascending=False).reset_index().head(1)
