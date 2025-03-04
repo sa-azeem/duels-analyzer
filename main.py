@@ -151,8 +151,26 @@ class helpers:
                     data_dict['Opponent Id'].append(game['teams'][other]['players'][0]['playerId'])
                     data_dict['Opponent Country'].append( helpers.get_country_name(game['teams'][other]['players'][0]['countryCode']))
 
-                    data_dict['Your Rating'].append(game['teams'][me]['players'][0]['rating'])
-                    data_dict['Opponent Rating'].append(game['teams'][other]['players'][0]['rating'])
+                    # in your placement games, both will be none and the rating will be None
+                    if game['teams'][me]['players'][0]['progressChange']['competitiveProgress'] is not None:
+                        data_dict['Your Rating'].append(game['teams'][me]['players'][0]['progressChange']['competitiveProgress']['ratingAfter'])
+                    else:
+                        data_dict['Your Rating'].append(game['teams'][me]['players'][0]['progressChange']["rankedSystemProgress"]['ratingAfter'])
+                    # in some cases, both above are none so take just the normal rating
+                    if data_dict['Your Rating'][-1] is None:
+                        data_dict['Your Rating'][-1]=game['teams'][me]['players'][0]['rating']
+                    
+                    # some users have progressChange as None and have rating 0, I think they might be in placement stages
+                    if  game['teams'][other]['players'][0]['progressChange'] is not None:
+                        if game['teams'][other]['players'][0]['progressChange']['competitiveProgress'] is not None:
+                            data_dict['Opponent Rating'].append(game['teams'][other]['players'][0]['progressChange']['competitiveProgress']['ratingAfter'])
+                        else:
+                            data_dict['Opponent Rating'].append(game['teams'][other]['players'][0]['progressChange']["rankedSystemProgress"]['ratingAfter'])
+                    else:
+                        data_dict['Opponent Rating'].append(np.nan)
+                    if data_dict['Opponent Rating'][-1] is None:
+                        data_dict['Opponent Rating'][-1]=game['teams'][other]['players'][0]['rating']
+                    
 
             else:
                 # print(f"Request failed with status code: {response.status_code}")
