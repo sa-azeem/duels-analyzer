@@ -1009,8 +1009,9 @@ if (submitted_token or st.session_state['submitted_token']) and _ncfa:
                     helpers.create_map(df_filtered, metric_col)
 
                     st.markdown(f"#### {metric} distribution by Country")
-                    df_filtered_only_top_countries = df_filtered[df_filtered.reset_index(
+                    df_filtered_only_top_countries = df_filtered.reset_index()[df_filtered.reset_index(
                     )['Country'].isin(top_n_countries.reset_index()['Country'].tolist())]
+
                     metric_for_box = metric_col if metric_col != 'Distance' else 'Your Distance'
                     fig = px.box(data_frame=df_filtered_only_top_countries.reset_index(
                     ), x=metric_for_box, y='Country')
