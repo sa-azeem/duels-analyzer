@@ -9,7 +9,8 @@ import datetime
 # import helpers
 import plotly.express as px
 import altair as alt
-from datetime import timedelta, datetime
+from datetime import timedelta
+import datetime
 
 
 class helpers:
@@ -41,8 +42,9 @@ class helpers:
             entries = response.json()['entries']
             for entry in entries:
                 game_date = entry['time']
-                game_date = datetime.fromisoformat(game_date).date()
-                start_date = datetime.strptime("2024-07-01", "%Y-%m-%d").date()
+                game_date = datetime.datetime.fromisoformat(game_date).date()
+                start_date = datetime.datetime.strptime(
+                    "2024-07-01", "%Y-%m-%d").date()
                 if (game_date < start_date):
                     return game_tokens
 
