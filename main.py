@@ -38,7 +38,7 @@ class helpers:
         while True:
             response = session.get(
                 f"{BASE_URL_V4}/feed/private", params={'paginationToken': pagination_token})
-            pagination_token = entries = response.json()['paginationToken']
+            pagination_token = response.json()['paginationToken']
             entries = response.json()['entries']
             for entry in entries:
                 game_date = entry['time']
