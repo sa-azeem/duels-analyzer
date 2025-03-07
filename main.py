@@ -3,7 +3,7 @@ import random
 from math import floor
 import pandas as pd
 import numpy as np
-import requests
+from requests import Session
 import json
 import datetime
 # import helpers
@@ -16,9 +16,9 @@ import datetime
 class helpers:
     @staticmethod
     def get_session(ncfa):
-        session = requests.Session()
-        session.cookies.set("_ncfa", ncfa, domain="www.geoguessr.com")
-        return session
+        new_session = Session()
+        new_session.cookies.set("_ncfa", ncfa, domain="www.geoguessr.com")
+        return new_session
 
     @staticmethod
     def get_duel_tokens(session):
@@ -102,7 +102,7 @@ class helpers:
                           'Score Difference': [],
                           'Win Percentage': []
                           })
-
+        # st.write('inside get_duel', session.cookies.get_dict()['_ncfa'])
         BASE_URL_V3 = "https://game-server.geoguessr.com/api/duels"
         count_ = 0
         for token in duel_tokens:
@@ -812,16 +812,17 @@ if 'submitted_token' not in st.session_state:
 
 if (submitted_token or st.session_state['submitted_token']) and _ncfa:
     st.session_state['submitted_token'] = True
-    session = helpers.get_session(_ncfa)
-    player_data = helpers.get_player_data(session)
+    geoguessr_session = helpers.get_session(_ncfa)
+    player_data = helpers.get_player_data(geoguessr_session)
     if player_data != {}:
         my_player_Id = player_data['id']
         st.write(
             f"Hello {player_data['nick']} (id {player_data['id']}), extracting your game tokens...")
+
     if 'duel_tokens' not in st.session_state:
         st.session_state['duel_tokens'] = []
         with st.spinner("", show_time=True):
-            duel_tokens = helpers.get_duel_tokens(session)
+            duel_tokens = helpers.get_duel_tokens(geoguessr_session)
         st.session_state['duel_tokens'] = duel_tokens
     else:
         duel_tokens = st.session_state['duel_tokens']
@@ -862,12 +863,15 @@ if (submitted_token or st.session_state['submitted_token']) and _ncfa:
             # st.write(f"Retrieving games between {date_range[0]} and {date_range[1]}...")
             # to do the whole retrival  by date thing
         data_dict = {}
+        geoguessr_session_2 = Session()
+        geoguessr_session_2.cookies.set(
+            "_ncfa", _ncfa, domain=".geoguessr.com")
         if len(duel_tokens) > 0:
             if 'data_dict' not in st.session_state:
                 st.session_state['data_dict'] = {}
                 loading_bar = st.progress(0)
                 data_dict = helpers.get_duels(
-                    session, duel_tokens, my_player_Id, loading_bar)
+                    geoguessr_session_2, duel_tokens, my_player_Id, loading_bar)
                 st.success('Done')
                 st.session_state['data_dict'] = data_dict
             else:
