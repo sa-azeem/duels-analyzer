@@ -191,13 +191,16 @@ class helpers:
                     data_dict['Opponent Country'].append(helpers.get_country_name(
                         game['teams'][other]['players'][0]['countryCode']))
 
-                    # in your placement games, both will be none and the rating will be None
-                    if game['teams'][me]['players'][0]['progressChange']['competitiveProgress'] is not None:
-                        data_dict['Your Rating'].append(
-                            game['teams'][me]['players'][0]['progressChange']['competitiveProgress']['ratingAfter'])
+                    if game['teams'][me]['players'][0]['progressChange'] is not None:
+                        # in your placement games, both will be none and the rating will be None
+                        if game['teams'][me]['players'][0]['progressChange']['competitiveProgress'] is not None:
+                            data_dict['Your Rating'].append(
+                                game['teams'][me]['players'][0]['progressChange']['competitiveProgress']['ratingAfter'])
+                        else:
+                            data_dict['Your Rating'].append(
+                                game['teams'][me]['players'][0]['progressChange']["rankedSystemProgress"]['ratingAfter'])
                     else:
-                        data_dict['Your Rating'].append(
-                            game['teams'][me]['players'][0]['progressChange']["rankedSystemProgress"]['ratingAfter'])
+                        data_dict['Your Rating'].append(np.nan)
                     # in some cases, both above are none so take just the normal rating
                     if data_dict['Your Rating'][-1] is None:
                         data_dict['Your Rating'][-1] = game['teams'][me]['players'][0]['rating']
@@ -818,7 +821,7 @@ if (submitted_token or st.session_state['submitted_token']) and _ncfa:
         my_player_Id = player_data['id']
         st.write(
             f"Hello {player_data['nick']} (id {player_data['id']}), extracting your game tokens...")
-
+        print(player_data['nick'], player_data['id'])
     if 'duel_tokens' not in st.session_state:
         st.session_state['duel_tokens'] = []
         with st.spinner("", show_time=True):
