@@ -1,11 +1,8 @@
 import streamlit as st
-import random
-from math import floor
 import pandas as pd
 import numpy as np
 from requests import Session
 import json
-import datetime
 # import helpers
 import plotly.express as px
 import altair as alt
@@ -14,6 +11,13 @@ import datetime
 
 
 class helpers:
+    @staticmethod
+    def time_in_utc_530():
+        utc_time = datetime.datetime.now(datetime.timezone.utc)
+        offset = datetime.timedelta(hours=5, minutes=30)
+        time_ = utc_time.astimezone(datetime.timezone(offset))
+        return time_.strftime("%H:%M:%S %d-%m-%Y")
+
     @staticmethod
     def get_session(ncfa):
         new_session = Session()
@@ -49,7 +53,10 @@ class helpers:
                     return game_tokens
 
                 payload_json = json.loads(entry['payload'])
-
+                # cleaner way would be to check if payload_json is a dict, if yes
+                # then do payload_json=[payload_json]
+                # But it's working fine now, after many changes
+                # I don't want to change anything lol
                 if type(payload_json) is dict:
                     if get_token_from_payload(payload_json):
                         game_tokens.append(payload_json['gameId'])
@@ -75,6 +82,7 @@ class helpers:
 
     @staticmethod
     def get_duels(session, duel_tokens, my_player_Id, loading_bar):
+        # add everything to dictionarym then make a dataframe
         data_dict = dict({'Date': [],
                          'Game Id': [],
                           'Round Number': [],
@@ -102,7 +110,7 @@ class helpers:
                           'Score Difference': [],
                           'Win Percentage': []
                           })
-        # st.write('inside get_duel', session.cookies.get_dict()['_ncfa'])
+
         BASE_URL_V3 = "https://game-server.geoguessr.com/api/duels"
         count_ = 0
         for token in duel_tokens:
@@ -117,6 +125,8 @@ class helpers:
                     me = 1
                     other = 0
 
+                # right now doing the exact same for me and other
+                # better way would be to do [me, other] and then loop
                 for i in range(game['currentRoundNumber']):
                     round = game['rounds'][i]
 
@@ -243,7 +253,6 @@ class helpers:
                                                 'Score Difference': 'mean', 'Win Percentage': 'mean', 'Country': 'count', 'Your Distance': 'mean'})
         by_country.rename(
             columns={'Country': 'Number of Rounds', 'Your Distance': 'Distance'}, inplace=True)
-        # by_country['Score Difference']=by_country['Your Score']-by_country['Opponent Score']
         by_country['Win Percentage'] = by_country['Win Percentage'].apply(
             lambda x: round(x, 2))
         by_country[['Your Score', 'Opponent Score', 'Score Difference', 'Distance']] = by_country[[
@@ -543,6 +552,7 @@ class helpers:
 
         data = data.reset_index()
         data[x] = data[x].astype('object')
+        # nominal is very necessary else altair treats it as numeric, even when you change the type to object
         sorted_data = data.sort_values(
             by=y if checkbox1 else x, ascending=not checkbox2)
         c = alt.Chart(sorted_data).mark_bar().encode(
@@ -577,11 +587,10 @@ class helpers:
                        'Your Distance': 'Distance'}, inplace=True)
         by_date['Score Difference'] = by_date['Your Score'] - \
             by_date['Opponent Score']
-        # by_date['Win Percentage']=df.groupby('Country')[['Your Score','Opponent Score']].apply(lambda x: (x['Your Score']>x['Opponent Score']).mean()*100).apply(lambda x: round(x,2))
+
         by_date[['Your Score', 'Opponent Score', 'Score Difference', 'Distance']] = by_date[[
             'Your Score', 'Opponent Score', 'Score Difference', 'Distance']].apply(round)
-        # new_cols=['Number of Rounds']+[col for col in by_date.columns if col != 'Number of Rounds']
-        # by_date=by_date[new_cols]
+
         return by_date
 
     @staticmethod
@@ -603,15 +612,13 @@ class helpers:
 
         df['Date'] = pd.to_datetime(df['Date'])
 
-        if date_option == 'Week':
-            df['Group'] = df['Date'].dt.to_period(
-                'W').apply(lambda r: r.start_time)
-        elif date_option == 'Month':
-            df['Group'] = df['Date'].dt.to_period(
-                'M').apply(lambda r: r.start_time)
-        else:  # Yearly
-            df['Group'] = df['Date'].dt.to_period(
-                'Y').apply(lambda r: r.start_time)
+        period_map = {
+            'Week': 'W',
+            'Month': 'M',
+            'Year': 'Y'
+        }
+        df['Group'] = df['Date'].dt.to_period(
+            period_map[date_option]).apply(lambda r: r.start_time)
 
         fig = px.histogram(df, x='Group', y=metric_col, nbins=len(
             df['Group'].unique()), labels={'Group': 'Date'}, histfunc='avg')
@@ -665,15 +672,14 @@ class helpers:
         date_col = 'Date'
 
         df['Date'] = pd.to_datetime(df['Date'])
-        if date_option == 'Week':
-            group_format = 'W'
-        elif date_option == 'Month':
-            group_format = 'M'
-        else:  # Yearly
-            group_format = 'Y'
+        group_options = {
+            'Week': 'W',
+            'Month': 'M',
+            'Year': 'Y'
+        }
 
         df['Group'] = df[date_col].dt.to_period(
-            group_format).apply(lambda r: r.start_time)
+            group_options[date_option]).apply(lambda r: r.start_time)
         df_grouped = df.groupby(by='Group')[metric_col].mean()
 
         fig = px.line(df_grouped,  y=metric_col, markers=True)
@@ -692,7 +698,6 @@ class helpers:
         fig.update_layout(coloraxis_colorbar_title_side='bottom')
         fig.update_coloraxes(colorbar_title_text='',
                              colorbar_xpad=0, colorbar_thickness=5)
-        # fig.update_coloraxes(reversescale=True)
         if (show_avg_lines):
             fig.add_shape(
                 type="line",
@@ -722,14 +727,14 @@ class helpers:
         metric_col = 'Games Played'
         df[metric_col] = df['Game Id']
         df['Date'] = pd.to_datetime(df['Date'])
-        if date_option == 'Week':
-            group_format = 'W'
-        elif date_option == 'Month':
-            group_format = 'M'
-        else:  # Yearly
-            group_format = 'Y'
+
+        group_option = {
+            'Week': 'W',
+            'Month': 'M',
+            'Year': 'Y'
+        }
         df.loc[:, 'Group'] = df[date_col].dt.to_period(
-            group_format).apply(lambda r: r.start_time)
+            group_option[date_option]).apply(lambda r: r.start_time)
         df_grouped = df.groupby(by='Group')[metric_col].nunique()
 
         fig = px.line(df_grouped,  y=metric_col, markers=True)
@@ -821,7 +826,8 @@ if (submitted_token or st.session_state['submitted_token']) and _ncfa:
         my_player_Id = player_data['id']
         st.write(
             f"Hello {player_data['nick']} (id {player_data['id']}), extracting your game tokens...")
-        print(player_data['nick'], player_data['id'])
+        print(helpers.time_in_utc_530(),
+              player_data['nick'], player_data['id'])
     if 'duel_tokens' not in st.session_state:
         st.session_state['duel_tokens'] = []
         with st.spinner("", show_time=True):
@@ -920,7 +926,6 @@ if (submitted_token or st.session_state['submitted_token']) and _ncfa:
                 df_filtered = df[df['Running Total'] <= slider_value].copy()
             else:
                 df_filtered = df.copy()
-            # st.write(df_filtered)
             by_country = helpers.groupby_country(df_filtered)
             top_n = st.slider('Select how many countries you want to see (by round count):', min_value=1, max_value=len(
                 by_country), value=20, step=1, help='This helps filter out the countries that occur very rarely.')
