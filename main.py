@@ -113,6 +113,7 @@ class helpers:
 
         BASE_URL_V3 = "https://game-server.geoguessr.com/api/duels"
         count_ = 0
+        unrated_tokens = []
         for token in duel_tokens:
             count_ += 1
             loading_bar.progress(count_/len(duel_tokens))
@@ -125,6 +126,9 @@ class helpers:
                     me = 1
                     other = 0
 
+                if game['options']['isRated'] is False:
+                    unrated_tokens.append(token)
+                    continue
                 # right now doing the exact same for me and other
                 # better way would be to do [me, other] and then loop
                 for i in range(game['currentRoundNumber']):
@@ -184,8 +188,11 @@ class helpers:
 
                     data_dict['Date'].append(game['rounds'][0]['startTime'])
 
-                    data_dict['Map Name'].append(
-                        game['options']['map']['name'])
+                    if game['options']['map'] is not None:
+                        data_dict['Map Name'].append(
+                            game['options']['map']['name'])
+                    else:
+                        data_dict['Map Name'].append("Unknown")
                     data_dict['Game Mode'].append(
                         game['options']['competitiveGameMode'])
 
@@ -232,7 +239,9 @@ class helpers:
                 # print(f"Request failed with status code: {response.status_code}")
                 # print(f"Response content: {response.text}")
                 pass
-        return data_dict
+        duel_tokens = [
+            token for token in duel_tokens if token not in unrated_tokens]
+        return data_dict, duel_tokens
 
     @staticmethod
     def datetime_processing(df):
@@ -879,7 +888,7 @@ if (submitted_token or st.session_state['submitted_token']) and _ncfa:
             if 'data_dict' not in st.session_state:
                 st.session_state['data_dict'] = {}
                 loading_bar = st.progress(0)
-                data_dict = helpers.get_duels(
+                data_dict, duel_tokens = helpers.get_duels(
                     geoguessr_session_2, duel_tokens, my_player_Id, loading_bar)
                 st.success('Done')
                 st.session_state['data_dict'] = data_dict
